@@ -1,14 +1,10 @@
-
 <!DOCTYPE html>
-
 <html lang="zh-Hant">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>潛水氣瓶統計系統</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,10 +22,39 @@
             text-align: center;
         }
 
-        input, select, button {
-            margin: 5px 0;
-            padding: 10px;
-            width: 100%;
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .button-container button {
+            width: 48%;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .button-container button.selected {
+            background-color: #28a745;
+        }
+
+        .moai-button {
+            display: block;
+            margin: 20px auto;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ea/Moai_Rano_raraku.jpg'); /* 替換為摩艾岩的圖片 URL */
+            background-size: cover;
+            width: 100px;
+            height: 150px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
         }
 
         table {
@@ -43,50 +68,25 @@
             padding: 10px;
             text-align: center;
         }
-    </style>
 
+        #summary {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="container">
-
     <h2>潛水氣瓶統計系統</h2>
 
-    <label for="member">選擇成員：</label>
-    <select id="member">
-        <option value="小妤姐">小妤姐</option>
-        <option value="欣莤">欣莤</option>
-        <option value="丁">丁</option>
-        <option value="蚊子">蚊子</option>
-        <option value="小劉哥">小劉哥</option>
-        <option value="小畢">小畢</option>
-        <option value="巫主任">巫主任</option>
-        <option value="小兔">小兔</option>
-        <option value="阿仁">阿仁</option>
-        <option value="阿凱">阿凱</option>
-        <option value="柏祥">柏祥</option>
-        <option value="伯倫">伯倫</option>
-        <option value="康康">康康</option>
-        <option value="豆桑">豆桑</option>
-    </select>
+    <div class="button-container" id="memberButtons">
+        <!-- 成員按鈕將在這裡動態生成 -->
+    </div>
 
-    <label for="day">選擇日期：</label>
-    <select id="day">
-        <option value="1">第1天</option>
-        <option value="2">第2天</option>
-        <option value="3">第3天</option>
-        <option value="4">第4天</option>
-        <option value="5">第5天</option>
-        <option value="6">第6天</option>
-        <option value="7">第7天</option>
-    </select>
-
-    <label for="count">氣瓶支數：</label>
-    <input type="number" id="count" min="0" value="0">
-
-    <button onclick="logUsage()">登記氣瓶使用</button>
-    <button onclick="updateUsage()">修正使用數據</button>
+    <!-- 摩艾岩按鈕 -->
+    <button class="moai-button" onclick="generateSummary()"></button>
 
     <h3>每日氣瓶使用情況</h3>
     <table>
@@ -107,83 +107,92 @@
         </tbody>
     </table>
 
-    <button onclick="generateWeeklyReport()">生成整週報告</button>
-    <h3>整週報告</h3>
-    <p id="weeklyReport"></p>
-
+    <h3 id="summary"></h3>
 </div>
 
 <script>
-// 初始化成員列表與使用紀錄
-const team = ["小妤姐", "欣莤", "丁", "蚊子", "小劉哥", "小畢", "巫主任", "小兔", "阿仁", "阿凱", "柏祥", "伯倫", "豆桑"];
-const usageLog = {};
+    // 初始化成員列表與使用紀錄
+    const team = ["小妤姐", "欣莤", "丁", "蚊子", "小劉哥", "小畢", "巫主任", "小兔", "阿仁", "阿凱", "柏祥", "伯倫", "康康", "豆桑", "新成員A", "新成員B"];
+    const usageLog = {};
+    const selectedMembers = {}; // 用來儲存被選中的成員
 
-// 初始化每位成員的使用紀錄
-team.forEach(member => {
-    usageLog[member] = [0, 0, 0, 0, 0, 0, 0]; // 每天的氣瓶使用量，初始為0
-});
-
-// 更新使用紀錄表格
-function updateUsageTable() {
-    const tableBody = document.getElementById("usageTable");
-    tableBody.innerHTML = ''; // 清空表格
+    // 初始化每位成員的使用紀錄
     team.forEach(member => {
-        let row = `<tr><td>${member}</td>`;
-        for (let i = 0; i < 7; i++) {
-            row += `<td>${usageLog[member][i]}</td>`;
+        usageLog[member] = [0, 0, 0, 0, 0, 0, 0]; // 每天的氣瓶使用量，初始為0
+        selectedMembers[member] = false; // 初始化所有成員都未選中
+    });
+
+    // 生成成員按鈕
+    function generateMemberButtons() {
+        const container = document.getElementById("memberButtons");
+        container.innerHTML = ''; // 清空容器
+        team.forEach(member => {
+            const button = document.createElement("button");
+            button.innerText = member;
+            button.onclick = () => handleMemberButtonClick(member, button);
+            container.appendChild(button);
+        });
+    }
+
+    // 按鈕點擊處理函數
+    function handleMemberButtonClick(member, button) {
+        const today = new Date();
+        const day = today.getDate() % 7; // 假設我們根據當前日期，來決定氣瓶紀錄的第幾天
+        if (button.classList.contains("selected")) {
+            if (confirm(`確定要取消 ${member} 的登記嗎？`)) {
+                button.classList.remove("selected");
+                selectedMembers[member] = false; // 取消選擇
+                usageLog[member][day - 1] -= 1; // 減少當天的氣瓶數量
+                alert(`${member} 的登記已取消。`);
+            }
+        } else {
+            button.classList.add("selected");
+            selectedMembers[member] = true; // 設置成員已選
+            usageLog[member][day - 1] += 1; // 默認當前時間，氣瓶數量增加1
+            alert(`${member} 已登記，當前時間為：${today.toLocaleString()}，氣瓶數量+1。`);
         }
-        row += `</tr>`;
-        tableBody.innerHTML += row;
-    });
-}
-
-// 記錄氣瓶使用量
-function logUsage() {
-    const member = document.getElementById("member").value;
-    const day = parseInt(document.getElementById("day").value);
-    const count = parseInt(document.getElementById("count").value);
-
-    if (count < 0) {
-        alert("請輸入有效的氣瓶支數 (0 或正整數)。");
-        return;
+        updateUsageTable(); // 更新表格
     }
 
-    usageLog[member][day - 1] += count;
-    alert(`${member} 在第 ${day} 天使用了 ${count} 支氣瓶。`);
-    updateUsageTable(); // 更新表格
-}
-
-// 修正氣瓶使用量
-function updateUsage() {
-    const member = document.getElementById("member").value;
-    const day = parseInt(document.getElementById("day").value);
-    const count = parseInt(document.getElementById("count").value);
-
-    if (count < 0) {
-        alert("請輸入有效的氣瓶支數 (0 或正整數)。");
-        return;
+    // 更新使用紀錄表格
+    function updateUsageTable() {
+        const tableBody = document.getElementById("usageTable");
+        tableBody.innerHTML = ''; // 清空表格
+        team.forEach(member => {
+            if (usageLog[member].some(count => count > 0)) {
+                let row = `<tr><td>${member}</td>`;
+                for (let i = 0; i < 7; i++) {
+                    row += `<td>${usageLog[member][i]}</td>`;
+                }
+                row += `</tr>`;
+                tableBody.innerHTML += row;
+            }
+        });
     }
 
-    usageLog[member][day - 1] = count;
-    alert(`${member} 在第 ${day} 天的氣瓶使用數量已修正為 ${count} 支。`);
-    updateUsageTable(); // 更新表格
-}
+    // 摩艾岩按鈕功能：生成統計摘要並顯示總人數、日期，並可傳送至 Line
+    function generateSummary() {
+        const today = new Date();
+        const selectedCount = Object.values(selectedMembers).filter(selected => selected).length;
+        const dateString = today.toLocaleDateString();
 
-// 生成整週報告
-function generateWeeklyReport() {
-    let report = "";
-    team.forEach(member => {
-        const total = usageLog[member].reduce((a, b) => a + b, 0);
-        report += `${member} 一共使用了 ${total} 支氣瓶。\n`;
-    });
-    document.getElementById("weeklyReport").innerText = report;
-}
+        if (selectedCount > 0) {
+            const summary = `該行程總人數為 ${selectedCount} 人，日期為 ${dateString}。`;
+            document.getElementById("summary").innerText = summary;
 
-// 初始化頁面時更新表格
-updateUsageTable();
+            // 使用 Line 分享統計結果（使用 Line 官方的 URL Scheme）
+            const lineMessage = encodeURIComponent(summary);
+            const lineUrl = `https://line.me/R/msg/text/?${lineMessage}`;
+            window.open(lineUrl, '_blank');
+        } else {
+            alert("尚未選擇任何成員！");
+        }
+    }
 
+    // 初始化頁面時生成成員按鈕並更新表格
+    generateMemberButtons();
+    updateUsageTable();
 </script>
 
 </body>
-
 </html>
