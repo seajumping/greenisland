@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>潛水氣瓶統計系統</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+        }
+
+        .container {
+
+            max-width: 600px;
+
+            margin: auto;
+
+            padding: 20px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 10px;
+
+        }
+
+        h2 {
+
+            text-align: center;
+
+        }
+
+        input, select, button {
+
+            margin: 5px 0;
+
+            padding: 10px;
+
+            width: 100%;
+
+        }
+
+        table {
+
+            width: 100%;
+
+            margin-top: 20px;
+
+            border-collapse: collapse;
+
+        }
+
+        th, td {
+
+            border: 1px solid #ccc;
+
+            padding: 10px;
+
+            text-align: center;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+<div class="container">
+
+    <h2>潛水氣瓶統計系統</h2>
+
+    
+
+    <label for="member">選擇成員：</label>
+
+    <select id="member">
+
+        <option value="小妤姐">小妤姐</option>
+
+        <option value="欣莤">欣莤</option>
+
+        <option value="丁">丁</option>
+
+        <option value="蚊子">蚊子</option>
+
+        <option value="小劉哥">小劉哥</option>
+
+        <option value="小畢">小畢</option>
+
+        <option value="巫主任">巫主任</option>
+
+        <option value="小兔">小兔</option>
+
+        <option value="阿仁">阿仁</option>
+
+        <option value="阿凱">阿凱</option>
+        
+        <option value="柏祥">柏祥</option>
+        
+        <option value="伯倫">伯倫</option>
+        
+        <option value="康康">康康</option>
+        
+        <option value="豆桑">豆桑</option>
+
+    </select>
+
+
+
+    <label for="day">選擇日期：</label>
+
+    <select id="day">
+
+        <option value="1">第1天</option>
+
+        <option value="2">第2天</option>
+
+        <option value="3">第3天</option>
+
+        <option value="4">第4天</option>
+
+        <option value="5">第5天</option>
+
+        <option value="6">第6天</option>
+
+        <option value="7">第7天</option>
+
+    </select>
+
+
+
+    <label for="count">氣瓶支數：</label>
+
+    <input type="number" id="count" min="1" value="1">
+
+
+
+    <button onclick="logUsage()">登記氣瓶使用</button>
+
+
+
+    <h3>每日氣瓶使用情況</h3>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>成員</th>
+
+                <th>第1天</th>
+
+                <th>第2天</th>
+
+                <th>第3天</th>
+
+                <th>第4天</th>
+
+                <th>第5天</th>
+
+                <th>第6天</th>
+
+                <th>第7天</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="usageTable">
+
+            <!-- 這裡會自動填充成員使用數據 -->
+
+        </tbody>
+
+    </table>
+
+
+
+    <button onclick="generateWeeklyReport()">生成整週報告</button>
+
+
+
+    <h3>整週報告</h3>
+
+    <p id="weeklyReport"></p>
+
+</div>
+
+
+
+<script>
+
+// 初始化成員列表與使用紀錄
+
+const team = ["小妤姐", "欣莤", "丁", "蚊子", "小劉哥", "小畢", "巫主任", "小兔", "阿仁", "阿凱", "柏祥", "伯倫", "豆桑"];
+
+const usageLog = {};
+
+
+
+// 初始化每位成員的使用紀錄
+
+team.forEach(member => {
+
+    usageLog[member] = [0, 0, 0, 0, 0, 0, 0]; // 每天的氣瓶使用量，初始為0
+
+});
+
+
+
+// 更新使用紀錄表格
+
+function updateUsageTable() {
+
+    const tableBody = document.getElementById("usageTable");
+
+    tableBody.innerHTML = ''; // 清空表格
+
+    team.forEach(member => {
+
+        let row = `<tr><td>${member}</td>`;
+
+        for (let i = 0; i < 7; i++) {
+
+            row += `<td>${usageLog[member][i]}</td>`;
+
+        }
+
+        row += `</tr>`;
+
+        tableBody.innerHTML += row;
+
+    });
+
+}
+
+
+
+// 記錄氣瓶使用量
+
+function logUsage() {
+
+    const member = document.getElementById("member").value;
+
+    const day = parseInt(document.getElementById("day").value);
+
+    const count = parseInt(document.getElementById("count").value);
+
+    
+
+    usageLog[member][day - 1] += count;
+
+    
+
+    alert(`${member} 在第 ${day} 天使用了 ${count} 支氣瓶。`);
+
+    updateUsageTable(); // 更新表格
+
+}
+
+
+
+// 生成整週報告
+
+function generateWeeklyReport() {
+
+    let report = "";
+
+    team.forEach(member => {
+
+        const total = usageLog[member].reduce((a, b) => a + b, 0);
+
+        report += `${member} 一共使用了 ${total} 支氣瓶。\n`;
+
+    });
+
+    document.getElementById("weeklyReport").innerText = report;
+
+}
+
+
+
+// 初始化頁面時更新表格
+
+updateUsageTable();
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
