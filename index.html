@@ -16,185 +16,213 @@
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 10px;
+            position: relative;
         }
 
         h2 {
             text-align: center;
+            margin: 20px 0;
+            padding-left: 60px; /* Ensure text does not overlap the image */
+            font-size: 24px; /* Font size for h2 */
+            color: #0000FF; /* Font color for h2 */
+            background: url('https://github.com/seajumping/greenisland/blob/main/airfish.jpg') no-repeat left center;
+            background-size: 50px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 8px;
+            width: 30%;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            font-size: inherit; /* Inherit font size from h2 */
+            color: inherit; /* Inherit text color from h2 */
+        }
+
+        .member-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .member-buttons button {
+            background-color: #add8e6; /* 淡藍色 */
+            color: gray; /* 灰色 */
+            font-size: 12px; /* Set font size to match h2 */
+        }
+
+        .member-buttons button.selected {
+            background-color: #f44336; /* 正紅色 */
+            color: white;
+        }
+
+        .img-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .timestamp {
+            font-size: 14px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .log {
+            margin-top: 20px;
+        }
+
+        .log-container {
+            display: flex;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            flex: 1;
+            min-width: 100px;
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .button-container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         .button-container button {
-            width: 48%;
-            padding: 10px 20px;
-            margin-bottom: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
-            color: white;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-
-        .button-container button.selected {
-            background-color: #28a745;
-        }
-
-        .confirm-button {
-            display: block;
-            margin: 20px auto;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: red;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            line-height: 100px;
-        }
-
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-        }
-
-        #summary {
-            text-align: center;
-            margin-top: 20px;
+            margin: 5px;
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h2>潛水氣瓶統計系統</h2>
+    <div class="container">
+        <div class="timestamp" id="currentDateTime"></div>
 
-    <div class="button-container" id="memberButtons">
-        <!-- 成員按鈕將在這裡動態生成 -->
+        <h2>潛水氣瓶統計系統</h2>
+
+        <div class="member-buttons">
+            <button id="小妤姐" onclick="toggleMember('小妤姐')">小妤姐</button>
+            <button id="新莤" onclick="toggleMember('新莤')">新莤</button>
+            <button id="丁" onclick="toggleMember('丁')">丁</button>
+            <button id="蚊子" onclick="toggleMember('蚊子')">蚊子</button>
+            <button id="小劉哥" onclick="toggleMember('小劉哥')">小劉哥</button>
+            <button id="小畢" onclick="toggleMember('小畢')">小畢</button>
+            <button id="巫主任" onclick="toggleMember('巫主任')">巫主任</button>
+            <button id="小兔" onclick="toggleMember('小兔')">小兔</button>
+            <button id="阿仁" onclick="toggleMember('阿仁')">阿仁</button>
+            <button id="阿凱" onclick="toggleMember('阿凱')">阿凱</button>
+            <button id="柏祥" onclick="toggleMember('柏祥')">柏祥</button>
+            <button id="伯倫" onclick="toggleMember('伯倫')">伯倫</button>
+            <button id="康康" onclick="toggleMember('康康')">康康</button>
+            <button id="豆桑" onclick="toggleMember('豆桑')">豆桑</button>
+            <button id="Eric" onclick="toggleMember('Eric')">Eric</button>
+            <button id="新成員A" onclick="toggleMember('新成員A')">新成員A</button>
+        </div>
+
+        <div class="button-container">
+            <button class="img-button" onclick="generateReport()">
+                <span style="font-size: 20px; color: #0000FF;">出單</span>
+            </button>
+            <button onclick="calculateTotalTrips()">統計</button>
+        </div>
+
+        <div id="logContainer" class="log-container"></div>
     </div>
 
-    <!-- 紅色圓形按鈕 -->
-    <button class="confirm-button" onclick="generateSummary()">行程出單</button>
+    <script>
+        const team = ["小妤姐", "新莤", "丁", "蚊子", "小劉哥", "小畢", "巫主任", "小兔", "阿仁", "阿凱", "柏祥", "伯倫", "康康", "豆桑", "Eric", "新成員A"];
+        const tripCounts = {};
+        let selectedMembers = [];
 
-    <h3>每日氣瓶使用情況</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>成員</th>
-                <th>第1天</th>
-                <th>第2天</th>
-                <th>第3天</th>
-                <th>第4天</th>
-                <th>第5天</th>
-                <th>第6天</th>
-                <th>第7天</th>
-            </tr>
-        </thead>
-        <tbody id="usageTable">
-            <!-- 這裡會自動填充成員使用數據 -->
-        </tbody>
-    </table>
-
-    <h3 id="summary"></h3>
-</div>
-
-<script>
-    // 初始化成員列表與使用紀錄
-    const team = ["小妤姐", "欣莤", "丁", "蚊子", "小劉哥", "小畢", "巫主任", "小兔", "阿仁", "阿凱", "柏祥", "伯倫", "康康", "豆桑", "新成員A", "新成員B"];
-    const usageLog = {};
-    const selectedMembers = {}; // 用來儲存被選中的成員
-
-    // 初始化每位成員的使用紀錄
-    team.forEach(member => {
-        usageLog[member] = [0, 0, 0, 0, 0, 0, 0]; // 每天的氣瓶使用量，初始為0
-        selectedMembers[member] = false; // 初始化所有成員都未選中
-    });
-
-    // 生成成員按鈕
-    function generateMemberButtons() {
-        const container = document.getElementById("memberButtons");
-        container.innerHTML = ''; // 清空容器
-        team.forEach(member => {
-            const button = document.createElement("button");
-            button.innerText = member;
-            button.onclick = () => handleMemberButtonClick(member, button);
-            container.appendChild(button);
-        });
-    }
-
-    // 按鈕點擊處理函數
-    function handleMemberButtonClick(member, button) {
-        const today = new Date();
-        const day = today.getDate() % 7; // 假設我們根據當前日期，來決定氣瓶紀錄的第幾天
-        if (button.classList.contains("selected")) {
-            if (confirm(`確定要取消 ${member} 的登記嗎？`)) {
+        function toggleMember(member) {
+            const button = document.getElementById(member);
+            const index = selectedMembers.indexOf(member);
+            if (index > -1) {
+                selectedMembers.splice(index, 1);
                 button.classList.remove("selected");
-                selectedMembers[member] = false; // 取消選擇
-                usageLog[member][day - 1] -= 1; // 減少當天的氣瓶數量
-                alert(`${member} 的登記已取消。`);
+                alert(`${member} 已取消登記。`);
+            } else {
+                selectedMembers.push(member);
+                button.classList.add("selected");
+                alert(`${member} 已登記。`);
             }
-        } else {
-            button.classList.add("selected");
-            selectedMembers[member] = true; // 設置成員已選
-            usageLog[member][day - 1] += 1; // 默認當前時間，氣瓶數量增加1
-            alert(`${member} 已登記，當前時間為：${today.toLocaleString()}，氣瓶數量+1。`);
         }
-        updateUsageTable(); // 更新表格
-    }
 
-    // 更新使用紀錄表格
-    function updateUsageTable() {
-        const tableBody = document.getElementById("usageTable");
-        tableBody.innerHTML = ''; // 清空表格
-        team.forEach(member => {
-            if (usageLog[member].some(count => count > 0)) {
-                let row = `<tr><td>${member}</td>`;
-                for (let i = 0; i < 7; i++) {
-                    row += `<td>${usageLog[member][i]}</td>`;
+        function generateReport() {
+            if (selectedMembers.length === 0) {
+                alert("尚未選擇任何成員！");
+                return;
+            }
+
+            const currentDateTime = new Date();
+            const formattedDate = currentDateTime.toLocaleDateString();
+            const formattedTime = currentDateTime.toLocaleTimeString();
+
+            const logEntry = `<div class="log-entry">
+                <p>日期: ${formattedDate}</p>
+                <p>時間: ${formattedTime}</p>
+                <p>總人數: ${selectedMembers.length}</p>
+                <p>成員: ${selectedMembers.join(', ')}</p>
+            </div>`;
+
+            const logContainer = document.getElementById('logContainer');
+            const logEntries = logContainer.getElementsByClassName('log-entry');
+            if (logEntries.length >= 5) {
+                logContainer.removeChild(logEntries[0]);
+            }
+            logContainer.insertAdjacentHTML('beforeend', logEntry);
+
+            // 分享至Line功能
+            const message = `行程出單\n日期: ${formattedDate}\n時間: ${formattedTime}\n總人數: ${selectedMembers.length}\n成員: ${selectedMembers.join(', ')}`;
+            const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
+            window.open(lineUrl, '_blank');
+
+            // 更新出行次數
+            selectedMembers.forEach(member => {
+                if (!tripCounts[member]) {
+                    tripCounts[member] = 0;
                 }
-                row += `</tr>`;
-                tableBody.innerHTML += row;
-            }
-        });
-    }
+                tripCounts[member]++;
+            });
 
-    // 行程出單按鈕功能：生成統計摘要，並允許分享到Line
-    function generateSummary() {
-        const today = new Date();
-        const selectedCount = Object.values(selectedMembers).filter(selected => selected).length;
-        const dateString = today.toLocaleDateString();
-
-        if (selectedCount > 0) {
-            const summaryMessage = `行程總人數: ${selectedCount} 人\n日期: ${dateString}`;
-            alert(summaryMessage); // 顯示行程總人數及日期
-            
-            // 分享到Line
-            const lineShareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(summaryMessage)}`;
-            window.open(lineShareUrl, '_blank');
-        } else {
-            alert("尚未選擇任何成員！");
+            selectedMembers = [];
+            resetButtons();
         }
-    }
 
-    // 初始化頁面時生成成員按鈕並更新表格
-    generateMemberButtons();
-    updateUsageTable();
-</script>
+        function resetButtons() {
+            team.forEach(member => {
+                const button = document.getElementById(member);
+                button.classList.remove("selected");
+            });
+        }
+
+        function calculateTotalTrips() {
+            let totalTrips = 0;
+            let details = '各成員出行次數:\n';
+            for (const member in tripCounts) {
+                details += `${member}: ${tripCounts[member]} 次\n`;
+                totalTrips += tripCounts[member];
+            }
+            details += `\n所有人員的總出行次數為: ${totalTrips}`;
+            alert(details);
+        }
+
+        // 實時更新日期與時間
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('currentDateTime').innerText = now.toLocaleString();
+        }, 1000);
+    </script>
 
 </body>
+
 </html>
