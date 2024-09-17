@@ -45,16 +45,19 @@
             background-color: #28a745;
         }
 
-        .moai-button {
+        .confirm-button {
             display: block;
             margin: 20px auto;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ea/Moai_Rano_raraku.jpg'); /* 替換為摩艾岩的圖片 URL */
-            background-size: cover;
             width: 100px;
-            height: 150px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: red;
+            color: white;
             border: none;
-            border-radius: 10px;
+            font-size: 16px;
             cursor: pointer;
+            text-align: center;
+            line-height: 100px;
         }
 
         table {
@@ -85,8 +88,8 @@
         <!-- 成員按鈕將在這裡動態生成 -->
     </div>
 
-    <!-- 摩艾岩按鈕 -->
-    <button class="moai-button" onclick="generateSummary()"></button>
+    <!-- 紅色圓形按鈕 -->
+    <button class="confirm-button" onclick="generateSummary()">行程出單</button>
 
     <h3>每日氣瓶使用情況</h3>
     <table>
@@ -170,20 +173,19 @@
         });
     }
 
-    // 摩艾岩按鈕功能：生成統計摘要並顯示總人數、日期，並可傳送至 Line
+    // 行程出單按鈕功能：生成統計摘要，並允許分享到Line
     function generateSummary() {
         const today = new Date();
         const selectedCount = Object.values(selectedMembers).filter(selected => selected).length;
         const dateString = today.toLocaleDateString();
 
         if (selectedCount > 0) {
-            const summary = `該行程總人數為 ${selectedCount} 人，日期為 ${dateString}。`;
-            document.getElementById("summary").innerText = summary;
-
-            // 使用 Line 分享統計結果（使用 Line 官方的 URL Scheme）
-            const lineMessage = encodeURIComponent(summary);
-            const lineUrl = `https://line.me/R/msg/text/?${lineMessage}`;
-            window.open(lineUrl, '_blank');
+            const summaryMessage = `行程總人數: ${selectedCount} 人\n日期: ${dateString}`;
+            alert(summaryMessage); // 顯示行程總人數及日期
+            
+            // 分享到Line
+            const lineShareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(summaryMessage)}`;
+            window.open(lineShareUrl, '_blank');
         } else {
             alert("尚未選擇任何成員！");
         }
