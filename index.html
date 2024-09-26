@@ -20,15 +20,15 @@
             background-image: url('airfish.jpg');
             background-repeat: no-repeat;
             background-position: top left;
-            background-size: 80px 80px; /* Adjust size as needed */
+            background-size: 80px 80px;
         }
 
         h2 {
             text-align: center;
             margin: 20px 0;
-            padding-left: 60px; /* Ensure text does not overlap the image */
-            font-size: 24px; /* Font size for h2 */
-            color: #0000FF; /* Font color for h2 */
+            padding-left: 60px;
+            font-size: 24px;
+            color: #0000FF;
             background: url('https://github.com/seajumping/greenisland/blob/main/airfish.jpg') no-repeat left center;
             background-size: 50px;
         }
@@ -40,8 +40,8 @@
             border: none;
             border-radius: 5px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-            font-size: inherit; /* Inherit font size from h2 */
-            color: inherit; /* Inherit text color from h2 */
+            font-size: inherit;
+            color: inherit;
         }
 
         .member-buttons {
@@ -51,13 +51,13 @@
         }
 
         .member-buttons button {
-            background-color: #add8e6; /* 淡藍色 */
-            color: gray; /* 灰色 */
-            font-size: 12px; /* Set font size to match h2 */
+            background-color: #add8e6;
+            color: gray;
+            font-size: 12px;
         }
 
         .member-buttons button.selected {
-            background-color: #f44336; /* 正紅色 */
+            background-color: #f44336;
             color: white;
         }
 
@@ -74,23 +74,19 @@
             right: 10px;
         }
 
-        .log {
-            margin-top: 20px;
-        }
-
+        /* 使用grid顯示，每列最多3個 */
         .log-container {
-            display: flex;
-            overflow-x: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            max-width: 600px;
             margin-top: 20px;
         }
 
         .log-entry {
-            flex: 1;
-            min-width: 100px;
-            margin: 5px;
-            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            padding: 10px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
         }
 
@@ -180,9 +176,12 @@
 
             const logContainer = document.getElementById('logContainer');
             const logEntries = logContainer.getElementsByClassName('log-entry');
-            if (logEntries.length >= 5) {
+
+            // 限制最多顯示 24 條數據
+            if (logEntries.length >= 24) {
                 logContainer.removeChild(logEntries[0]);
             }
+
             logContainer.insertAdjacentHTML('beforeend', logEntry);
 
             // 分享至Line功能
