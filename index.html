@@ -210,13 +210,26 @@
 
         function calculateTotalTrips() {
             let totalTrips = 0;
+            let maxTrips = 0;
+            let mostActiveMembers = [];
+
             let details = '各成員出行次數:\n';
             for (const member in tripCounts) {
                 details += `${member}: ${tripCounts[member]} 次\n`;
                 totalTrips += tripCounts[member];
+
+                // 確定出行次數最多的成員
+                if (tripCounts[member] > maxTrips) {
+                    maxTrips = tripCounts[member];
+                    mostActiveMembers = [member]; // 重置冠軍列表
+                } else if (tripCounts[member] === maxTrips) {
+                    mostActiveMembers.push(member); // 添加多人同次數情況
+                }
             }
+
+            let highlight = `此次的鷹派人員是：${mostActiveMembers.join(', ')}，出行次數為 ${maxTrips} 次！`;
             details += `\n所有人員的總出行次數為: ${totalTrips}`;
-            alert(details);
+            alert(details + '\n\n' + highlight);
         }
 
         // 實時更新日期與時間
